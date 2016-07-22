@@ -1,0 +1,60 @@
+<html>
+<head>
+	<title>@t.title</title>
+	<link type="text/css" rel="stylesheet" href="/css/inspector.css" />
+	<script src="/jslibs/jquery/dist/jquery.min.js"></script>
+	<script src="/jslibs/socket.io-client/socket.io.js"></script>
+	<script src="/js/inspector.js"></script>
+	
+</head>
+
+<body>
+
+	<div id="log_list" class=log-list></div>
+
+	<section id="express" class=express></section>
+
+	<section id="filter" class=filter>
+		<div class=submiter>
+			<label>Filter:</label><input type=text name=fkw />
+
+			<span>Your Address:<span id="address"></span></span>
+
+			<button type=button action="clear" >清空</button>
+		</div>
+	</section>
+
+	<script>
+		
+
+		var socket = io('http://console.diandao.org:8999/');
+		var inspector = new Inspector(socket);
+
+		socket.on("connected", function(data){
+			var filters = 0;
+			for(var x in data.filter){
+				filters = 1; break;
+			}
+			$.getJSON("http://api.diandao.org/user/clientip?callback=?",function(res, ip){
+				ip = res.data;
+				data.address = ip;
+				if(!filters){
+					inspector.renderExpress(data);
+				}
+				$("#address").text( data.address );
+			});
+			
+		})
+
+		socket.on('log', function (data) {
+			console.log(data);
+			inspector.push(data);
+		});
+
+		socket.on("updateFilter", function(data){
+			inspector.updateFilter(data);
+		})
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+#!/bin/bash
+
+pwd=`pwd`
+dir=`dirname $0`
+base=${dir:0:1}
+if [[ "$base" != "/" ]]; then
+    dir="$pwd/$dir"
+fi
+if [[ "$base" == "." ]]; then
+    dir="$pwd"
+fi
+
+prog="watcher"
+appjs="$dir/wserver.js";
+logfile="/var/log/watcher/forever.log"
+errorfile="/var/log/watcher/error.log"
+
+
+start() {
+	forever start -a -l $logfile -e $errorfile $appjs
+}
+
+stop() {
+	forever stop $appjs
+}
+
+
+
+# See how we were called.
+case "$1" in
+start)
+        start
+        ;;
+
+stop)
+        stop
+        ;;
+
+restart)
+        stop
+        start
+        ;;
+
+status)
+        status $prog
+        RETVAL=$?
+        ;;
+*)
+        echo $"Usage: $prog {start|stop|restart}"
+        exit 1
+esac
+
+exit $RETVAL

@@ -2,10 +2,8 @@
  * 服务启动脚本
  */
 
-CHANNEL_WEB = "web";
-
 var express	= require("express")
-,   app 	= module.exports = express()
+,   app 	= express()
 ,   util	= require("util")
 ,	bodyParser = require("body-parser")
 ,	methodOverride = require('method-override')
@@ -17,16 +15,17 @@ var express	= require("express")
 ,	session = require("express-session")
 ,	RedisStore = require('connect-redis')(session)
 ,   router = require("./server/routes")
+,	jsonfile = require("jsonfile")
 ;
     
 // 全局变量
 sformat = require("./server/lib/string-format");
 socketAction = require("./server/routes/socketio");
-config = require("./server/config");
-
-// Redis Client
 redisConfig = {filters:[]}; //redisClient.get("console_watcher_config")||{};
 
+config = jsonfile.readFileSync("./runtime.json");
+
+// Redis Client
 
 redisClient = redis.createClient( config["redisPort"], config["redisHost"] );
 redisClient.on('connect', function(){
@@ -46,8 +45,6 @@ subscriber.on('error', function(err){
 subscriber.on("message", socketAction.onConsoleMessage );
 subscriber.subscribe( "console-log" );
 subscriber.subscribe( "console-server-reg");
-
-
 
 
 // 设置视图目录
@@ -121,3 +118,5 @@ io.gather = {
 
 // When someone connects to the websocket. Includes all the SocketIO events.
 io.sockets.on('connection', socketAction.SocketOnConnection);
+
+module.exports = app;

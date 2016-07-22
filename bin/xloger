@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+
+var pwd = __dirname
+,	path = require('path')
+,	program  = require('commander')
+,	jsonfile = require('jsonfile')
+,	defs = jsonfile.readFileSync(path.join(pwd, "../defaults.json"))
+,	forever = require('forever')
+,	execSync = require('child_process').execSync
+;
+
+ 
+var	runtime_file = path.join(pwd, "../runtime.json")
+,	app_file = path.join(pwd, "../xloger.js");
+
+program
+	.version('0.0.1');
+
+program
+	.command('start')
+	.description('Start xloger server with web gui.')
+	.option("-p, --port [port]", "The port xloger server listened.")
+	.option("-c, --config [configfile]", "Use a config json file for advanced configuration.")
+	.option("-d, --daemon", "Start with daemon mode.")
+	.action(function(options){
+		var config = Object.assign({}, defs); // clone the default configuration
+		if(options.config){
+			var updates = {};
+			try{
+				var updates = jsonfile.fs.readFileSync(options.config);
+			}catch(e){ }
+			config = Object.assign(config, updates);
+		}
+		if(options.port) config.port = options.port;
+		
+		// write config to file
+		jsonfile.writeFileSync(runtime_file, config);
+		if(!options.daemon){
+			var app = require("../xloger");
+		}else{
+			// forever
+			var child = new(forever.Monitor)(app_file, {
+			    max: 100,
+			    silent: true
+			});
+
+			//These events not required, but I like to hear about it.
+			child.on( "exit", function() {
+				console.log( 'xloger has exited!' );
+			});
+			child.on( "restart", function() {
+				console.log( 'xloger has restarted.' );
+			});
+			//These lines actually kicks things off
+			child.start();
+			// forever.startServer( child );
+		}
+	});
+
+
+program.parse(process.argv);

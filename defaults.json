@@ -1,0 +1,10 @@
+{
+	"port":9527,
+
+	"logdir":"./",
+
+	"redisHost":"ConsoleRedisServer",
+	"redisPort":6379,
+	"redisDatabase":8,
+	"redisConfigName":"console_watcher_config"
+}

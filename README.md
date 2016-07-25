@@ -1,21 +1,9 @@
-#watcher
+#xloger
 
-#Install
+A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs
 
-npm install
+## Installation
 
-npm install bower -g
-
-bower install
-
-
-#start
-
-node wserver.js
-
-
-
-# Filter
-serverIP:
-clientIP:
-cookie:name=value
+```bash
+$ npm install xloger
+```

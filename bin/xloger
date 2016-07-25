@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+var pwd = __dirname
+,	path = require('path')
+,	program  = require('commander')
+,	jsonfile = require('jsonfile')
+,	defs = require("../defaults.json")
+,	pkg	 = require("../package")
+,	forever = require('forever')
+,	execSync = require('child_process').execSync
+;
+
+ 
+var	runtime_file = path.join(pwd, "../runtime.json")
+,	app_script = path.join(pwd, "../xloger.js");
+
+// assign the version from package.json
+program.version(pkg.version);
+
+/**
+ * start command
+ */
+program
+	.command('start')
+	.description('start xloger server with web gui.')
+	.option("-p, --port [port]", "the port xloger server listened, default: 9527")
+	.option("-c, --config [configfile]", "path to config file which format whith json.")
+	.option("-d, --debug", "debug mode, default to daemon mode.")
+	.action(function(options){
+		var config = Object.assign({}, defs); // clone the default configuration
+		if(options.config){
+			var updates = {};
+			try{
+				updates = jsonfile.fs.readFileSync(options.config);
+			}catch(e){ }
+			config = Object.assign(config, updates);
+		}
+		if(options.port) config.port = options.port;
+		
+		// write config to file
+		jsonfile.writeFileSync(runtime_file, config);
+		if(options.debug){
+			require(app_script);
+			return;
+		}else{
+			forever.getAllProcesses(function(err, processes){
+				var proc = forever.findByScript(app_script, processes);
+				if(proc){
+					console.error('error: xloger has already run as pid:'+proc[0].pid+'.');
+					return;
+				}
+				var result = forever.startDaemon(app_script, {
+					uid:"xloger",
+					pidFile: "/var/run/xloger.pid",
+					logFile: "/var/log/xloger/xloger.log"
+				});
+				if(result){
+					console.log("xloger started.");
+				}
+				
+			});
+		}
+	});
+
+/**
+ * stop command
+ */
+program
+	.command('stop')
+	.description('stop xloger server.')
+	.action(function(){
+		forever.getAllProcesses(function(err, processes){
+			var proc = forever.findByScript(app_script, processes);
+			if(!proc){
+				console.error('error: xloger does not running.');
+				return;
+			}
+			forever.stop(app_script);
+			console.log("xloger stoped.")
+		});
+	});
+
+
+program.parse(process.argv);

@@ -6,5 +6,8 @@
 	"redisHost":"ConsoleRedisServer",
 	"redisPort":6379,
 	"redisDatabase":8,
-	"redisConfigName":"console_watcher_config"
+	"redisConfigName":"console_watcher_config",
+
+	"logfile":"./xloger.log",
+	"pidfile":"./xloger.pid"
 }

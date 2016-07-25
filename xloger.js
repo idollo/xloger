@@ -19,11 +19,11 @@ var express	= require("express")
 ;
     
 // 全局变量
-sformat = require("./server/lib/string-format");
-socketAction = require("./server/routes/socketio");
-redisConfig = {filters:[]}; //redisClient.get("console_watcher_config")||{};
-
-config = jsonfile.readFileSync("./runtime.json");
+var	sformat = global.sformat = require("./server/lib/string-format")
+,	socketAction = global.socketAction = require("./server/routes/socketio")
+,	redisConfig = global.redisConfig =  {filters:[]} //redisClient.get("console_watcher_config")||{};
+,	config = global.config = jsonfile.readFileSync("./runtime.json")
+;
 
 // Redis Client
 

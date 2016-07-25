@@ -1,8 +1,13 @@
 {
   "name": "xloger",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "preferGlobal": "true",
-  "description": "a cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs",
+  "description": "A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs",
+  "author": {
+    "name": "idollo",
+    "email": "idollo@xloger.org"
+  },
+  "homepage": "https://github.com/idollo/xloger",
   "main": "xloger.js",
   "dependencies": {
     "body-parser": "1.12.0",
@@ -16,7 +21,6 @@
     "express": "4.12.3",
     "express-error": "0.0.7",
     "express-session": "1.10.3",
-    "forever": "^0.15.2",
     "hiredis": "0.5.0",
     "jsonfile": "^2.3.1",
     "method-override": "2.3.1",
@@ -24,7 +28,7 @@
     "redis": "0.12.1",
     "socket.io": "^1.3.5",
     "util": "0.10.3",
-    "vash": "0.7.12-1"
+    "forever": "git@github.com:idollo/xforever.git"
   },
   "devDependencies": {},
   "bin": {
@@ -35,13 +39,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@git.oschina.net:idollo/watcher.git"
+    "url": "git@github.com:idollo/xloger.git"
   },
   "keywords": [
     "loger",
     "tracer",
     "watcher"
   ],
-  "author": "stone58@qq.com",
   "license": "MIT"
 }

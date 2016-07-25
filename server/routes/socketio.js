@@ -8,6 +8,8 @@ var cookie = require("cookie")
 ,   path = require('path')
 ,   moment = require('moment')
 ,   extend = require('util')._extend
+,   config = global.config
+,   redisConfig = global.redisConfig
 ;
 
 

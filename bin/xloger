@@ -4,30 +4,34 @@ var pwd = __dirname
 ,	path = require('path')
 ,	program  = require('commander')
 ,	jsonfile = require('jsonfile')
-,	defs = jsonfile.readFileSync(path.join(pwd, "../defaults.json"))
+,	defs = require("../defaults.json")
+,	pkg	 = require("../package")
 ,	forever = require('forever')
 ,	execSync = require('child_process').execSync
 ;
 
  
 var	runtime_file = path.join(pwd, "../runtime.json")
-,	app_file = path.join(pwd, "../xloger.js");
+,	app_script = path.join(pwd, "../xloger.js");
 
-program
-	.version('0.0.1');
+// assign the version from package.json
+program.version(pkg.version);
 
+/**
+ * start command
+ */
 program
 	.command('start')
-	.description('Start xloger server with web gui.')
-	.option("-p, --port [port]", "The port xloger server listened.")
-	.option("-c, --config [configfile]", "Use a config json file for advanced configuration.")
-	.option("-d, --daemon", "Start with daemon mode.")
+	.description('start xloger server with web gui.')
+	.option("-p, --port [port]", "the port xloger server listened, default: 9527")
+	.option("-c, --config [configfile]", "path to config file which format whith json.")
+	.option("-d, --debug", "debug mode, default to daemon mode.")
 	.action(function(options){
 		var config = Object.assign({}, defs); // clone the default configuration
 		if(options.config){
 			var updates = {};
 			try{
-				var updates = jsonfile.fs.readFileSync(options.config);
+				updates = jsonfile.fs.readFileSync(options.config);
 			}catch(e){ }
 			config = Object.assign(config, updates);
 		}
@@ -35,26 +39,45 @@ program
 		
 		// write config to file
 		jsonfile.writeFileSync(runtime_file, config);
-		if(!options.daemon){
-			var app = require("../xloger");
+		if(options.debug){
+			require(app_script);
+			return;
 		}else{
-			// forever
-			var child = new(forever.Monitor)(app_file, {
-			    max: 100,
-			    silent: true
+			forever.getAllProcesses(function(err, processes){
+				var proc = forever.findByScript(app_script, processes);
+				if(proc){
+					console.error('error: xloger has already run as pid:'+proc[0].pid+'.');
+					return;
+				}
+				var result = forever.startDaemon(app_script, {
+					uid:"xloger",
+					pidFile: "/var/run/xloger.pid",
+					logFile: "/var/log/xloger/xloger.log"
+				});
+				if(result){
+					console.log("xloger started.");
+				}
+				
 			});
-
-			//These events not required, but I like to hear about it.
-			child.on( "exit", function() {
-				console.log( 'xloger has exited!' );
-			});
-			child.on( "restart", function() {
-				console.log( 'xloger has restarted.' );
-			});
-			//These lines actually kicks things off
-			child.start();
-			// forever.startServer( child );
 		}
+	});
+
+/**
+ * stop command
+ */
+program
+	.command('stop')
+	.description('stop xloger server.')
+	.action(function(){
+		forever.getAllProcesses(function(err, processes){
+			var proc = forever.findByScript(app_script, processes);
+			if(!proc){
+				console.error('error: xloger does not running.');
+				return;
+			}
+			forever.stop(app_script);
+			console.log("xloger stoped.")
+		});
 	});
 
 

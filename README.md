@@ -5,7 +5,7 @@ A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) 
 ##Requirement
 Before install xloger, you have to install the javascript runtime [Nodejs](https://nodejs.org) first.
 ##Installation
-Install via npm which is the buildin Package Managerment for Nodejs.
+Install via npm which is a build-in package managerment for Nodejs.
 ```bash
 $ npm install xloger
 ```

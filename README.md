@@ -10,7 +10,7 @@ This is a server side program, for clients please use the follows:
 * [xloger-node](https://gitbug.com/idollo/xloger-node)
 
 ## How does XLoger works with web servers?
-![sq](server/public/imgs/sequence.png =600x)
+![](server/public/imgs/sequence.png)
 
 ##Requirement
 Before install xloger, you have to install the javascript runtime [Nodejs](https://nodejs.org) first.

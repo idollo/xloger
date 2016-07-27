@@ -1,4 +1,4 @@
-#xloger (in construction)
+#XLoger (in construction)
 
 A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs.
 			
@@ -9,8 +9,8 @@ This is a server side program, for clients please use the follows:
 * [xloger-python](https://github.com/idollo/xloger-python)
 * [xloger-node](https://gitbug.com/idollo/xloger-node)
 
-## How does Xloge works with web servers?
-![sq](server/public/imgs/sequence.png)
+## How does XLoger works with web servers?
+![sq](server/public/imgs/sequence.png =600x)
 
 ##Requirement
 Before install xloger, you have to install the javascript runtime [Nodejs](https://nodejs.org) first.

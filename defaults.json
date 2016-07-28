@@ -1,5 +1,6 @@
 {
 	"port":9527,
+	"socketPort": 19527,
 
 	"logdir":"./",
 

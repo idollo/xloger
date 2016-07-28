@@ -20,31 +20,34 @@ var express	= require("express")
     
 // 全局变量
 var	sformat = global.sformat = require("./server/lib/string-format")
-,	socketAction = global.socketAction = require("./server/routes/socketio")
+,	websocket = global.websocket = require("./server/routes/websocket")
 ,	redisConfig = global.redisConfig =  {filters:[]} //redisClient.get("console_watcher_config")||{};
 ,	config = global.config = jsonfile.readFileSync("./runtime.json")
 ;
 
 // Redis Client
 
-redisClient = redis.createClient( config["redisPort"], config["redisHost"] );
-redisClient.on('connect', function(){
-	redisClient.select(config["redisDatabase"]||0);
-});
-redisClient.on('error', function(err){
-	console.error(err);
-});
-// 订阅console消息
-subscriber = redis.createClient( config["redisPort"], config["redisHost"] );
-// subscriber.on('connect', function(){
-// 	subscriber.select(config["redisDatabase"]||0);
+// redisClient = redis.createClient( config["redisPort"], config["redisHost"] );
+// redisClient.on('connect', function(){
+// 	redisClient.select(config["redisDatabase"]||0);
 // });
-subscriber.on('error', function(err){
-	console.error(err);
-});
-subscriber.on("message", socketAction.onConsoleMessage );
-subscriber.subscribe( "console-log" );
-subscriber.subscribe( "console-server-reg");
+// redisClient.on('error', function(err){
+// 	console.error(err);
+// });
+// // 订阅console消息
+// subscriber = redis.createClient( config["redisPort"], config["redisHost"] );
+// // subscriber.on('connect', function(){
+// // 	subscriber.select(config["redisDatabase"]||0);
+// // });
+// subscriber.on('error', function(err){
+// 	console.error(err);
+// });
+// subscriber.on("message", websocket.onConsoleMessage );
+// subscriber.subscribe( "console-log" );
+// subscriber.subscribe( "console-server-reg");
+
+// 创建socket接口, 订阅socket消息通道
+require("./server/routes/socket").subscribe();
 
 
 // 设置视图目录
@@ -117,6 +120,6 @@ io.gather = {
 };
 
 // When someone connects to the websocket. Includes all the SocketIO events.
-io.sockets.on('connection', socketAction.SocketOnConnection);
+io.sockets.on('connection', websocket.SocketOnConnection);
 
 module.exports = app;

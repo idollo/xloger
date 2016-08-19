@@ -10,6 +10,7 @@ var cookie = require("cookie")
 ,   extend = require('util')._extend
 ,   config = global.config
 ,   redisConfig = global.redisConfig
+,   filterMgr = require('../lib/filtermgr')
 ;
 
 
@@ -32,7 +33,7 @@ exports.SocketOnConnection = function(socket) {
 
     socket.join( "web" );
 
-    updateRedisFilter();
+    filterMgr.update(socket);
 
     socket.emit('connected', { address: handshake.address, reportors:reportServers, filter:handshake.filter } );
 
@@ -57,28 +58,18 @@ exports.SocketOnConnection = function(socket) {
         }
 
         if(field) handshake.filter[field] = filter[1];
+        
+        filterMgr.update(socket);
         socket.emit("updateFilter", handshake.filter );
-        updateRedisFilter();
     });
 
 
     /** 断开来连接 */
     socket.on('disconnect', function () {
-
+        filterMgr.remove(sessionID);
     });
   
 };
-
-
-function updateRedisFilter(){
-    var filters = []; // 全局filter
-    // 遍历客户端, 合并filter
-    io.to("web").sockets.forEach(function(socket, i){
-        filters.push( socket.handshake.filter );
-    });
-    redisConfig.filters = filters;
-    redisClient.set( config["redisConfigName"], JSON.stringify(redisConfig) );
-}
 
 
 
@@ -295,31 +286,5 @@ function writeLog(action, data){
 
     fs.appendFileSync(filename, logstr, {flags:"a+"});
 
-}
-
-
-// 收到服务器推送过来的消息
-exports.onConsoleMessage =  function (channel, message) {
-    message = JSON.parse(message);
-
-    if(channel == "console-log"){
-        webPublish("log", message );
-    }
-
-    if(channel == "console-server-reg"){
-        var serverip = message.ip;
-        var server = reportServers[serverip];
-        if(!server){
-            server = reportServers[serverip] = {
-                serverip: serverip,
-                hosts:[]
-            };
-        }
-        // 保存服务器所绑定的host
-        if(message.host && message.host!="unknown" && server.hosts.indexOf(message.host)<0 ){
-            server.hosts.push(message.host)
-        }
-        redisConfig.reportServers = reportServers;
-    }
 }
 

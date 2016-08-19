@@ -16,11 +16,38 @@ function writeSocket(socket, data, callback){
 
 
 function threadCheckin(socket, data){
-	writeSocket(socket, {name:"hello"});
+	var sid = socket.handshake.sessionID;
+	var accepted = filterMgr.detect(data);
+	writeSocket(socket, {accepted: accepted});
 }
 
 function serverRegister(){
 	
+}
+
+// 收到服务器推送过来的消息
+exports.onConsoleMessage =  function (channel, message) {
+    message = JSON.parse(message);
+
+    if(channel == "console-log"){
+        webPublish("log", message );
+    }
+
+    if(channel == "console-server-reg"){
+        var serverip = message.ip;
+        var server = reportServers[serverip];
+        if(!server){
+            server = reportServers[serverip] = {
+                serverip: serverip,
+                hosts:[]
+            };
+        }
+        // 保存服务器所绑定的host
+        if(message.host && message.host!="unknown" && server.hosts.indexOf(message.host)<0 ){
+            server.hosts.push(message.host)
+        }
+        redisConfig.reportServers = reportServers;
+    }
 }
 
 // 消息调度

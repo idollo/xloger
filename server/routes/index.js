@@ -5,7 +5,7 @@
 
 
 exports.watcher =  function(req, res, next){
-	res.render("index", {"title":"Watcher"});
+	res.render("index", { "title":"XLoger", "port": global.config.port });
 };
 
 exports.clientip = function(req, res, next){

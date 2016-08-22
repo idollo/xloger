@@ -1,7 +1,11 @@
 "use strict";
 const readline = require('readline');
 const Stream = require('stream');
-var  uuid = require('node-uuid');
+
+var filterMgr = require('../lib/filtermgr');
+var uuid = require('node-uuid');
+
+var webPublish = require('../routes/websocket').webPublish;
 
 class SocketReader extends Stream.Readable {
 	_read(size) {
@@ -16,51 +20,44 @@ function writeSocket(socket, data, callback){
 
 
 function threadCheckin(socket, data){
-	var sid = socket.handshake.sessionID;
 	var accepted = filterMgr.detect(data);
-	writeSocket(socket, {accepted: accepted});
+	serverRegister(socket.remoteAddress, data.host);
+	writeSocket(socket, {accepted: accepted, ip:socket.remoteAddress});
 }
 
-function serverRegister(){
-	
-}
 
-// 收到服务器推送过来的消息
-exports.onConsoleMessage =  function (channel, message) {
-    message = JSON.parse(message);
+function serverRegister(ip, host){
+	var reportors = ncache.get("reportors")||{};
 
-    if(channel == "console-log"){
-        webPublish("log", message );
+    var server = reportors[ip];
+    if(!server){
+        server = reportors[ip] = {
+            serverip: ip,
+            hosts:[]
+        };
     }
-
-    if(channel == "console-server-reg"){
-        var serverip = message.ip;
-        var server = reportServers[serverip];
-        if(!server){
-            server = reportServers[serverip] = {
-                serverip: serverip,
-                hosts:[]
-            };
-        }
-        // 保存服务器所绑定的host
-        if(message.host && message.host!="unknown" && server.hosts.indexOf(message.host)<0 ){
-            server.hosts.push(message.host)
-        }
-        redisConfig.reportServers = reportServers;
+    // 保存服务器所绑定的host
+    if(host && host.toLowerCase()!="unknown" && server.hosts.indexOf(host)<0 ){
+        server.hosts.push(host)
     }
+    ncache.set("reportors", reportors);
 }
+
+
 
 // 消息调度
 function messageDispatcher(socket, message){
 	var action = message.action
 	,	data = message.data || {};
 	if(!action) return;
+	data.serverIP = socket.remoteAddress;
 	switch(action.toLowerCase()){
 		case "checkin":
 			return threadCheckin(socket, data);
 		case "register":
 			return serverRegister(socket, data);
 		case "trace":
+			return webPublish("log", data);
 		default:
 			return;
 	}

@@ -51,8 +51,8 @@ program
 				}
 				var result = forever.startDaemon(app_script, {
 					uid:"xloger",
-					pidFile: "/var/run/xloger.pid",
-					logFile: "/var/log/xloger/xloger.log"
+					pidFile: config.pidfile,
+					logFile: config.logfile
 				});
 				if(result){
 					console.log("xloger started.");

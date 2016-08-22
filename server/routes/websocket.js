@@ -1,5 +1,4 @@
 
-var reportServers = {};
 
 var cookie = require("cookie")
 ,   session = require("express-session")
@@ -9,6 +8,7 @@ var cookie = require("cookie")
 ,   moment = require('moment')
 ,   extend = require('util')._extend
 ,   config = global.config
+,   ncache = global.ncache
 ,   redisConfig = global.redisConfig
 ,   filterMgr = require('../lib/filtermgr')
 ;
@@ -22,20 +22,18 @@ var cookie = require("cookie")
  */
 exports.SocketOnConnection = function(socket) {
 
-	var handshake = socket.handshake
-	,	sessionID = handshake.sessionID
-	,	meetingID = handshake.meetingID
-	;
+	var handshake = socket.handshake;
 
     // parse cookies
-    handshake.cookies = cookie.parse(handshake.headers.cookie);
+    handshake.cookies = cookie.parse(handshake.headers.cookie||"");
+    var socketid = socket.id;
     handshake.filter = {};
 
     socket.join( "web" );
 
     filterMgr.update(socket);
 
-    socket.emit('connected', { address: handshake.address, reportors:reportServers, filter:handshake.filter } );
+    socket.emit('connected', { address: handshake.address, reportors: ncache.get("reportors")||{}, filter:handshake.filter } );
 
     // 筛选
     socket.on("filter",function(fltstr){
@@ -66,7 +64,7 @@ exports.SocketOnConnection = function(socket) {
 
     /** 断开来连接 */
     socket.on('disconnect', function () {
-        filterMgr.remove(sessionID);
+        filterMgr.remove(socketid);
     });
   
 };

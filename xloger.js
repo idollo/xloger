@@ -14,13 +14,14 @@ var express	= require("express")
 ,	session = require("express-session")
 ,   router = require("./server/routes")
 ,	jsonfile = require("jsonfile")
+,	NodeCache = require( "node-cache" )
 ;
     
 // 全局变量
 var	sformat = global.sformat = require("./server/lib/string-format")
-,	websocket = global.websocket = require("./server/routes/websocket")
+,	ncache = global.ncache = new NodeCache()
 ,	config = global.config = jsonfile.readFileSync("./runtime.json")
-,	ncache = global.ncache = new (require( "node-cache" ))();
+,	websocket = global.websocket = require("./server/routes/websocket")
 ;
 
 

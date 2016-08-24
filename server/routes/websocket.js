@@ -194,6 +194,16 @@ function webPublish (action, data){
 }
 exports.webPublish = webPublish;
 
+function mkdirs(dir){
+    if(!fs.existsSync(dir)){
+        var pdir = path.dirname(dir);
+        if(!fs.existsSync(pdir)){
+            mkdirs(pdir);
+        }
+        fs.mkdirSync(dir);
+    }
+}
+
 /**
  * 日志采集到文件
  */
@@ -201,7 +211,6 @@ function writeLog(action, data){
 
     if(action!="log") return;
     if(!data.fire) return;
-
     if(!data.serverIP){ // 无线程监控信息
         var th = tCache.get(data.thread);
         if(th){
@@ -209,11 +218,20 @@ function writeLog(action, data){
             data = extend(o, data);
         }
     }
+    var filename = "", type="Unknown";
     var date = moment().format('YYYYMMDD');
     var dir  = data.serverIP ? path.join(config.logdir, data.serverIP, date):  path.join(config.logdir, date);
-    if(!fs.existsSync(dir)){
-        fs.mkdirSync(dir, 755); // 创建目录
+
+    if(data.type.toLowerCase()=="filelog"){
+        filename = path.join( config.logdir, data.fire.logfile.format({
+            day: moment().format('DD'),
+            month: moment().format('MM'),
+            year: moment().format('YYYY')
+        }));
+        dir = path.dirname(filename);
     }
+
+    mkdirs(dir); // 创建目录
 
     var logconf = config.logger || {
             ignoreHosts:{
@@ -225,13 +243,13 @@ function writeLog(action, data){
         };
 
     // 日志过滤配置
-    if(logconf.ignoreHosts.all.indexOf(data.host.toLowerCase())>=0) return;
+    if(logconf.ignoreHosts.all.indexOf((data.host||"").toLowerCase())>=0) return;
 
-    var filename = "", type="Unknown";
+   
     switch(data.type.toLowerCase()){
         case "filelog":
             type = "FileLog";
-            filename = path.join( dir, data.fire.args[0] );
+            
             break;
         case "error":
         case "cerror":
@@ -260,26 +278,26 @@ function writeLog(action, data){
     }
 
     // 日志格式
-    var logstr = [
-            '[{datetime}] [{type}] {fire.message} on {fire.file} in line {fire.line} ',
-            '-- {method} {host}{uri}{post} "{ua}" {cip}'
-        ].join('').format({
-        type: type,
-        datetime: moment().format('DD/MMM/YYYY:HH:mm:ss ZZ'),
-        fire: data.fire,
-        sip: data.serverIP,
-        cip: data.clientIP,
-        method: data.httpMethod,
-        host: data.host,
-        ua: data.userAgent,
-        uri: data.requestURI,
-        post: (data.httpMethod.toLowerCase()=="post" && data.postData)?(["[DATA[","]]"].join(data.postData)):''
-    })+os.EOL+os.EOL;
-
+    var logstr = "";
     if(type=="FileLog"){
-        var args = data.fire.args.slice(1).map(function(arg, i){
-            return JSON.stringify(arg);
-        }).join(os.EOL)
+        logstr = data.fire.message+os.EOL+os.EOL;
+    }else{
+
+        logstr = [
+                '[{datetime}] [{type}] {fire.message} on {fire.file} in line {fire.line} ',
+                '-- {method} {host}{uri}{post} "{ua}" {cip}'
+            ].join('').format({
+            type: type,
+            datetime: moment().format('DD/MMM/YYYY:HH:mm:ss ZZ'),
+            fire: data.fire,
+            sip: data.serverIP,
+            cip: data.clientIP,
+            method: data.httpMethod,
+            host: data.host,
+            ua: data.userAgent,
+            uri: data.requestURI,
+            post: (data.httpMethod.toLowerCase()=="post" && data.postData)?(["[DATA[","]]"].join(data.postData)):''
+        })+os.EOL+os.EOL;
     }
 
     fs.appendFileSync(filename, logstr, {flags:"a+"});

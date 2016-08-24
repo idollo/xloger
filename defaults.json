@@ -2,8 +2,8 @@
 	"port":9527,
 	"socketPort": 19527,
 
-	"logdir":"./",
+	"logdir":"/var/log/xloger/",
 
-	"logfile":"/var/log/xloger.log",
+	"logfile":"/var/log/xloger/xloger.log",
 	"pidfile":"/var/run/xloger.pid"
 }

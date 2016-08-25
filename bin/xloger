@@ -15,7 +15,7 @@ var pwd = __dirname
 ,	jsonfile = require('jsonfile')
 ,	defs = require("../defaults.json")
 ,	pkg	 = require("../package")
-,	forever = require('forever')
+,	forever = require('xforever')
 ,	execSync = require('child_process').execSync
 ;
 

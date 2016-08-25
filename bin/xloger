@@ -1,6 +1,15 @@
 #!/usr/bin/env node
+/**
+ * xloger command-line interface
+ * use:
+ *	xloger --help to get help.
+ *	xloger start to start a daemon service.
+ *	xloger stop to stop the server.
+ */
 
 var pwd = __dirname
+,	os = require('os')
+,	fs = require("fs")
 ,	path = require('path')
 ,	program  = require('commander')
 ,	jsonfile = require('jsonfile')
@@ -10,7 +19,19 @@ var pwd = __dirname
 ,	execSync = require('child_process').execSync
 ;
 
- 
+// detect the default config file: xloger.json
+// POSIX: /etc/xloger.json
+// Win32: SysDriver:\windows\system32\xloger.json
+var uconf = null;
+switch(os.platform().toLowerCase()){
+	case "win32":
+		var sysdriver = path.parse(os.os.homedir())['root'];
+		uconf = path.join(path.parse(os.os.homedir())['root'], "windows", "system32", "xloger.json");
+		break;
+	default:
+		uconf = "/etc/xloger.json";
+}
+
 var	runtime_file = path.join(pwd, "../runtime.json")
 ,	app_script = path.join(pwd, "../xloger.js");
 
@@ -23,18 +44,19 @@ program.version(pkg.version);
 program
 	.command('start')
 	.description('start xloger server with web gui.')
-	.option("-p, --port [port]", "the port xloger server listened, default: 9527")
-	.option("-c, --config [configfile]", "path to config file which format whith json.")
+	.option("-p, --port", "the port xloger server listened, default: 9527")
+	.option("-c, --config", "path to config file which format whith json.\n\t\t  default:"+uconf)
 	.option("-d, --debug", "debug mode, default to daemon mode.")
 	.action(function(options){
 		var config = Object.assign({}, defs); // clone the default configuration
-		if(options.config){
-			var updates = {};
-			try{
-				updates = jsonfile.fs.readFileSync(options.config);
-			}catch(e){ }
-			config = Object.assign(config, updates);
+		if(!options.config){
+			options.config = uconf;
 		}
+		// load the user config file which exists.
+		if(fs.existsSync(options.config)){
+			config = Object.assign(config, require(options.config));
+		}
+
 		if(options.port) config.port = options.port;
 		
 		// write config to file
@@ -55,7 +77,7 @@ program
 					logFile: config.logfile
 				});
 				if(result){
-					console.log("xloger started.");
+					console.log("xloger started at http://:::"+config.port+".");
 				}
 				
 			});

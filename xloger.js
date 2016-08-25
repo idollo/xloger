@@ -4,6 +4,7 @@
 
 var express	= require("express")
 ,   app 	= express()
+,	path	= require('path')
 ,   util	= require("util")
 ,	bodyParser = require("body-parser")
 ,	methodOverride = require('method-override')
@@ -20,7 +21,7 @@ var express	= require("express")
 // 全局变量
 var	sformat = global.sformat = require("./server/lib/string-format")
 ,	ncache = global.ncache = new NodeCache()
-,	config = global.config = jsonfile.readFileSync("./runtime.json")
+,	config = global.config = jsonfile.readFileSync( path.join(__dirname, "./runtime.json"))
 ,	websocket = global.websocket = require("./server/routes/websocket")
 ;
 

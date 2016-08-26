@@ -178,6 +178,10 @@ function dispatchFilter(socket, data){
 function webPublish (action, data){
     data.timestamp = data.timestamp || (+new Date()/1000),
     data.fire = JSON.parse(data.fire||"null");
+
+    // 写日志
+    writeLog(action, data );
+
     // 遍历客户端, 根据filter发送消息
     io.to("web").sockets.forEach(function(socket, i){
         if( dispatchFilter(socket, data) ){
@@ -185,13 +189,11 @@ function webPublish (action, data){
         }
     });
 
-    // 写日志
-    writeLog(action, data );
-    
     // 缓存进程数据
     tCache.dispose(data);
     //io.to("web").emit( action, data );
 }
+
 exports.webPublish = webPublish;
 
 function mkdirs(dir){
@@ -228,6 +230,7 @@ function writeLog(action, data){
             month: moment().format('MM'),
             year: moment().format('YYYY')
         }));
+        data.logfile = filename; // parse data.logfile
         dir = path.dirname(filename);
     }
 

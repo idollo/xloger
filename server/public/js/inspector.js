@@ -85,6 +85,7 @@
 			}
 		},
 		renderThead:function(th){
+			console.log("--renderThead")
 			var $convert = $("<div/>");
 			th.requestURI = this.htmlEntity(th.requestURI);
 			var html = [
@@ -100,13 +101,13 @@
 		},
 		threadEnd:function(th){
 			this.thread_end_queue.push(th);
-			clearTimeout(this._tick_tm);
 			this._tickThreadEnd();
 		},
 		_tick_tm:null,
 		_tickThreadEnd:function(){
 			var s = this;
 			var $t, thread;
+			clearTimeout(s._tick_tm);
 			for(var i=0,l=this.thread_end_queue.length;i<l; i++){
 				thread = this.thread_end_queue[i];
 				$t = $("#"+thread.thread);
@@ -167,6 +168,7 @@
 					(function(){
 						switch (log.type){
 							case "filelog":
+								return '<label>{type|initial}: {logfile}</label><pre>{fire.message}</pre>';
 							case "log": return '<label>{type|initial}: </label>{parsedArgs}';
 							case "sqlquery":
 								log.msduration = (log.fire.duration*1000).toFixed(3)+" ms";
@@ -182,8 +184,7 @@
 				'</dt>',
 				'<dt class=file>{fire.file}<i>(第{fire.line}行)</i></dt>',
 			'</dl>'
-			].join('').format(log).format({parsedArgs:this.argsToStr(log.fire.args)});
-
+			].join('').format({parsedArgs:this.argsToStr(log.fire.args)}).format(log);
 			this.appendToThread(log.thread, html);
 		},
 		argsToStr:function(args){
@@ -217,7 +218,6 @@
 		renderExpress:function(data){
 			var s = this;
 			var $express = $("#express");
-			console.log('renderExpress',data);
 			s.$express = $express;
 			$express.html([
 				'<h1>暂无任何监控筛选条件, 快速筛选:</h1>',

@@ -220,7 +220,7 @@ q:after {
   content: none;
 }
 body {
-  font-family: sans-serif;
+  font-family: "stheiti", sans-serif;
 }
 b {
   font-weight: normal;
@@ -300,14 +300,14 @@ body {
   position: absolute;
   top: 5px;
   right: 0;
-  color: #20b2aa;
+  color: #20B2AA;
   padding: 0 10px 0 5px;
   font-weight: normal;
   background: white;
   border-radius: 4px;
 }
 .thread .thread-title:hover {
-  color: #20b2aa;
+  color: #20B2AA;
 }
 .thread:first-child {
   border-top: none;
@@ -380,19 +380,19 @@ dl.param dt {
   float: left;
   margin-left: -100px;
   font-weight: bold;
-  color: #20b2aa;
+  color: #20B2AA;
 }
 dl.param dl .string {
-  color: #ea6a33;
+  color: #EA6A33;
 }
 dl.param dl .number {
-  color: #2f4991;
+  color: #2F4991;
 }
 dl.param dl .object {
   color: #006400;
 }
 dl.param dl .null {
-  color: #2f4991;
+  color: #2F4991;
 }
 dl.param:first-child {
   border-top: none;
@@ -405,14 +405,14 @@ dl.param:last-child {
   border-bottom: 1px dashed #d7d7d7;
 }
 .log label {
-  color: #20b2aa;
+  color: #20B2AA;
   font-weight: bold;
 }
 .log .string {
-  color: #ea6a33;
+  color: #EA6A33;
 }
 .log .number {
-  color: #2f4991;
+  color: #2F4991;
 }
 .log .object {
   color: #006400;
@@ -434,20 +434,26 @@ dl.param:last-child {
   padding-left: 5px;
 }
 .log-warning label {
-  color: #daa520;
+  color: #DAA520;
 }
 .log-error label {
-  color: #b43928;
+  color: #B43928;
 }
 .log-sqlquery .message {
   display: block;
   margin-top: 8px;
 }
 .log-sqlquery .sql-kw {
-  color: #3875d7;
+  color: #3875D7;
 }
 .log-sqlquery .sql-string {
-  color: #ea6a33;
+  color: #EA6A33;
+}
+.log-filelog label span {
+  color: #a9a9a9;
+}
+.log-filelog pre {
+  color: #EA6A33;
 }
 .express {
   margin: 0 auto 100px;
@@ -477,7 +483,7 @@ dl.param:last-child {
   line-height: 36px;
   padding: 0 15px;
   font-size: 16px;
-  background: #20b2aa;
+  background: #20B2AA;
   border-radius: 4px;
   color: white;
 }
@@ -490,12 +496,12 @@ dl.param:last-child {
   padding: 0;
   line-height: 30px;
   border: none;
-  border-bottom: 1px dashed #20b2aa;
+  border-bottom: 1px dashed #20B2AA;
   color: #666;
   border-radius: 0;
 }
 .express h3:hover {
-  color: #20b2aa;
+  color: #20B2AA;
 }
 .express dt {
   margin-bottom: 5px;

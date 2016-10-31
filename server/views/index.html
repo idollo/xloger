@@ -23,7 +23,7 @@
 			<button type=button action="clear" >清空</button>
 		</div>
 	</section>
-
+	<script type="text/javascript" src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
 	<script>
 		
 
@@ -35,16 +35,13 @@
 			for(var x in data.filter){
 				filters = 1; break;
 			}
-			$.getJSON("http://api.diandao.org/user/clientip?callback=?",function(res, ip){
-				ip = res.data;
-				data.address = ip;
-				if(!filters){
-					inspector.renderExpress(data);
-				}
-				$("#address").text( data.address );
-			});
-			
-		})
+			var ip = returnCitySN.cip;
+			if(!filters){
+				data.address = ip
+				inspector.renderExpress(data);
+			}
+			$("#address").text( data.address );			
+		});
 
 		socket.on('log', function (data) {
 			console.log(data);

@@ -223,7 +223,6 @@ function writeLog(action, data){
     var filename = "", type="Unknown";
     var date = moment().format('YYYYMMDD');
     var dir  = data.serverIP ? path.join(config.logdir, data.serverIP, date):  path.join(config.logdir, date);
-
     if(data.type.toLowerCase()=="filelog"){
         filename = path.join( config.logdir, data.fire.logfile.format({
             day: moment().format('DD'),
@@ -246,9 +245,8 @@ function writeLog(action, data){
         };
 
     // 日志过滤配置
-    if(logconf.ignoreHosts.all.indexOf((data.host||"").toLowerCase())>=0) return;
-
-   
+    if(data.host && logconf.ignoreHosts.all.indexOf((data.host||"").toLowerCase())>=0) return;
+    data.host = data.host || "Unknown";
     switch(data.type.toLowerCase()){
         case "filelog":
             type = "FileLog";
@@ -285,7 +283,6 @@ function writeLog(action, data){
     if(type=="FileLog"){
         logstr = data.fire.message+os.EOL+os.EOL;
     }else{
-
         logstr = [
                 '[{datetime}] [{type}] {fire.message} on {fire.file} in line {fire.line} ',
                 '-- {method} {host}{uri}{post} "{ua}" {cip}'

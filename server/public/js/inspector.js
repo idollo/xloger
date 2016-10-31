@@ -162,6 +162,10 @@
 
 
 		renderTrace:function(log){
+			var data = $.extend({},log);
+			if (log.fire.args){
+				data.parsedArgs = this.argsToStr(log.fire.args)
+			}
 			var html = [
 			'<dl class="log log-{type}" type={type}>',
 				'<dt>',
@@ -184,7 +188,7 @@
 				'</dt>',
 				'<dt class=file>{fire.file}<i>(第{fire.line}行)</i></dt>',
 			'</dl>'
-			].join('').format({parsedArgs:this.argsToStr(log.fire.args)}).format(log);
+			].join('').format( data );
 			this.appendToThread(log.thread, html);
 		},
 		argsToStr:function(args){

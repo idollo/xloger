@@ -111,12 +111,13 @@ function subscribe(){
 	    });
 	    var rl = readline.createInterface({ input: stream });
 	    rl.on("line", function(buffer){
+	    	var message = null;
 	    	try{
-				var message = JSON.parse(buffer.toString());
-				messageDispatcher(socket, message);
+				message = JSON.parse(buffer.toString());
 			}catch(e){
 				console.log(e);
 			}
+			messageDispatcher(socket, message);
 	    });
 	    // 为这个socket实例添加一个"data"事件处理函数
 	    socket.on('data', function(buffer) {

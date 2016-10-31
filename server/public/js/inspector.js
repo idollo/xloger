@@ -168,7 +168,7 @@
 					(function(){
 						switch (log.type){
 							case "filelog":
-								return '<label>{type|initial}: {logfile}</label><pre>{fire.message}</pre>';
+								return '<label>{type|initial}: <span>{logfile}</span></label><pre>{fire.message}</pre>';
 							case "log": return '<label>{type|initial}: </label>{parsedArgs}';
 							case "sqlquery":
 								log.msduration = (log.fire.duration*1000).toFixed(3)+" ms";

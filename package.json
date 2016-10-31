@@ -1,6 +1,6 @@
 {
   "name": "xloger",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "preferGlobal": "true",
   "description": "A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs",
   "author": {

@@ -163,19 +163,19 @@
 
 		renderTrace:function(log){
 			var data = $.extend({},log);
-			if (log.fire.args){
-				data.parsedArgs = this.argsToStr(log.fire.args)
+			if (data.fire.args){
+				data.parsedArgs = this.argsToStr(data.fire.args)
 			}
 			var html = [
 			'<dl class="log log-{type}" type={type}>',
 				'<dt>',
 					(function(){
-						switch (log.type){
+						switch (data.type){
 							case "filelog":
 								return '<label>{type|initial}: <span>{logfile}</span></label><pre>{fire.message}</pre>';
 							case "log": return '<label>{type|initial}: </label>{parsedArgs}';
 							case "sqlquery":
-								log.msduration = (log.fire.duration*1000).toFixed(3)+" ms";
+								data.msduration = (data.fire.duration*1000).toFixed(3)+" ms";
 								return  [
 								'<label>[{type|initial}] ( {msduration} ) </label>',
 								'<span class=message>{fire.query|sqlHighlight}</span>'].join('');
@@ -189,7 +189,7 @@
 				'<dt class=file>{fire.file}<i>(第{fire.line}行)</i></dt>',
 			'</dl>'
 			].join('').format( data );
-			this.appendToThread(log.thread, html);
+			this.appendToThread(data.thread, html);
 		},
 		argsToStr:function(args){
 			if(!args) return "";

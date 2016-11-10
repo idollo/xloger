@@ -24,7 +24,8 @@ var	sformat = global.sformat = require("./server/lib/string-format")
 ,	config = global.config = jsonfile.readFileSync( path.join(__dirname, "./runtime.json"))
 ,	websocket = global.websocket = require("./server/routes/websocket")
 ;
-
+// 清除重置nodecache
+ncache.flushAll();
 
 // 创建socket接口, 订阅socket消息通道
 require("./server/routes/socket").subscribe();

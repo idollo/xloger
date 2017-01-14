@@ -27,6 +27,11 @@ var	sformat = global.sformat = require("./server/lib/string-format")
 // 清除重置nodecache
 ncache.flushAll();
 
+require('console-stamp')(console, {
+	pattern: 'dd/mm/yyyy HH:MM:ss.l',
+	level: config.logLevel || "log"
+});
+
 // 创建socket接口, 订阅socket消息通道
 require("./server/routes/socket").subscribe();
 

@@ -27,7 +27,7 @@ exports.SocketOnConnection = function(socket) {
 	;
 
     // parse cookies
-    handshake.cookies = cookie.parse(handshake.headers.cookie);
+    handshake.cookies = cookie.parse(handshake.headers.cookie || "");
     handshake.filter = {};
 
     socket.join( "web" );
@@ -73,7 +73,8 @@ exports.SocketOnConnection = function(socket) {
 function updateRedisFilter(){
     var filters = []; // 全局filter
     // 遍历客户端, 合并filter
-    io.to("web").sockets.forEach(function(socket, i){
+    var sockets = io.to("web").sockets;
+    sockets && sockets.forEach(function(socket, i){
         filters.push( socket.handshake.filter );
     });
     redisConfig.filters = filters;

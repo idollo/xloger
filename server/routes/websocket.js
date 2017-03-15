@@ -237,7 +237,7 @@ function writeLog(action, data){
     var now = new Date()
     ,   year = now.getFullYear()
     ,   month = now.getMonth()+1
-    ,   day = now.getDay()
+    ,   day = now.getDate()
     ;
     month = month<10?("0"+month):(""+month);
     day = day<10?("0"+day):(""+day);

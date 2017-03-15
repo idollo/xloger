@@ -1,6 +1,6 @@
 {
   "name": "xloger",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "preferGlobal": "true",
   "description": "A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs",
   "author": {
@@ -10,6 +10,7 @@
   "homepage": "https://github.com/idollo/xloger",
   "main": "xloger.js",
   "dependencies": {
+    "console-stamp": "^0.2.4",
     "body-parser": "1.12.0",
     "commander": "2.9.0",
     "connect-multiparty": "1.2.5",

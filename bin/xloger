@@ -74,10 +74,10 @@ program
 				var result = forever.startDaemon(app_script, {
 					uid:"xloger",
 					pidFile: config.pidfile,
-					logFile: config.logfile
+					logFile: config.syslog
 				});
 				if(result){
-					console.log("xloger started at http://:::"+config.port+".");
+					console.log("XLoger Web Monitor listening at http://:::"+config.port+".");
 				}
 				
 			});

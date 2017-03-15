@@ -174,7 +174,20 @@ function dispatchFilter(socket, data){
     return true;
 }
 
-
+/**
+ * 日志采集到文件
+ */
+var LOG_LEVEL_DEBUG = 2
+,   LOG_LEVEL_INFO = 4
+,   LOG_LEVEL_NOTICE = 8
+,   LOG_LEVEL_WARNING = 16
+,   LOG_LEVEL_ERROR = 32
+,   level_map = {
+    "error": LOG_LEVEL_ERROR,
+    "warning": LOG_LEVEL_WARNING,
+    "notice": LOG_LEVEL_NOTICE,
+    "debug": LOG_LEVEL_DEBUG
+};
 function webPublish (action, data){
     data.timestamp = data.timestamp || (+new Date()/1000),
     data.fire = JSON.parse(data.fire||"null");
@@ -220,20 +233,45 @@ function writeLog(action, data){
             data = extend(o, data);
         }
     }
-    var filename = "", type="Unknown";
-    var date = moment().format('YYYYMMDD');
-    var dir  = data.serverIP ? path.join(config.logdir, data.serverIP, date):  path.join(config.logdir, date);
-    if(data.type.toLowerCase()=="filelog"){
-        filename = path.join( config.logdir, data.fire.logfile.format({
-            day: moment().format('DD'),
-            month: moment().format('MM'),
-            year: moment().format('YYYY')
-        }));
-        data.logfile = filename; // parse data.logfile
-        dir = path.dirname(filename);
-    }
 
-    mkdirs(dir); // 创建目录
+    var now = new Date()
+    ,   year = now.getFullYear()
+    ,   month = now.getMonth()+1
+    ,   day = now.getDay()
+    ;
+    month = month<10?("0"+month):(""+month);
+    day = day<10?("0"+day):(""+day);
+
+    var logdir = config.logdir || "/etc/log/xloger/{serverIP}";
+    var logfile = config.logfile || "/etc/log/xloger/{serverIP}/{type}.log";
+    var loglevel = level_map[config.loglevel || "debug"] || LOG_LEVEL_DEBUG;
+    var level = 0;
+    
+    logdir = logdir.format({
+        serverIP: data.serverIP||"",
+        year: year,
+        month: month,
+        day: day
+    });
+    
+    // 创建logdir目录
+    mkdirs(logdir);
+
+
+    // var filename = "", type="Unknown";
+    // var date = moment().format('YYYYMMDD');
+    // var dir  = data.serverIP ? path.join(config.logdir, data.serverIP, date):  path.join(config.logdir, date);
+    // if(data.type.toLowerCase()=="filelog"){
+    //     filename = path.join( config.logdir, data.fire.logfile.format({
+    //         day: moment().format('DD'),
+    //         month: moment().format('MM'),
+    //         year: moment().format('YYYY')
+    //     }));
+    //     data.logfile = filename; // parse data.logfile
+    //     dir = path.dirname(filename);
+    // }
+
+    // mkdirs(dir); // 创建目录
 
     var logconf = config.logger || {
             ignoreHosts:{
@@ -245,38 +283,63 @@ function writeLog(action, data){
         };
 
     // 日志过滤配置
-    if(data.host && logconf.ignoreHosts.all.indexOf((data.host||"").toLowerCase())>=0) return;
+    if(data.type.toLowerCase()!="filelog" && data.host && logconf.ignoreHosts.all.indexOf((data.host||"").toLowerCase())>=0) return;
     data.host = data.host || "Unknown";
+
+    var type="Unknown";
     switch(data.type.toLowerCase()){
         case "filelog":
             type = "FileLog";
-            
+            logfile = path.join( config.logdir, data.fire.logfile.format({
+                day: moment().format('DD'),
+                month: moment().format('MM'),
+                year: moment().format('YYYY')
+            }));
+            data.logfile = logfile; // parse data.logfile
+            level = LOG_LEVEL_DEBUG;
             break;
         case "error":
         case "cerror":
             if(logconf.ignoreHosts.error.indexOf(data.host.toLowerCase())>=0) return;
             type = "Error";
-            filename = path.join( dir, "error.log" );
+            level = LOG_LEVEL_ERROR;
             break;
         case "sqlerror":
             type = "SqlError";
-            filename = path.join( dir, "sql-error.log" );
+            level = LOG_LEVEL_ERROR;
             break;
         case "warning":
         case "cwarning":
             if(logconf.ignoreHosts.warning.indexOf(data.host.toLowerCase())>=0) return;
             type = "Warning";
-            filename = path.join( dir, "warning.log" );
+            level = LOG_LEVEL_WARNING;
             break;
         case "notice":
         case "cnotice":
             if(logconf.ignoreHosts.notice.indexOf(data.host.toLowerCase())>=0) return;
             type = "Notice";
-            filename = path.join( dir, "notice.log" );
+            level = LOG_LEVEL_NOTICE
             break;
         default:
             return;
     }
+
+    if (level < loglevel) return;
+    logfile = logfile.format({
+        serverIP: data.serverIP||"",
+        clientIP: data.clientIP||"",
+        host: data.host,
+        year: year, month:month, day: day,
+        type: type.toLowerCase()
+
+    });
+    if(!path.isAbsolute(logfile)){
+        logfile = path.join(logdir, logfile);
+    }
+
+    dir = path.dirname(logfile);
+    // 创建logdir目录
+    mkdirs(dir);
 
     // 日志格式
     var logstr = "";
@@ -300,7 +363,7 @@ function writeLog(action, data){
         })+os.EOL+os.EOL;
     }
 
-    fs.appendFileSync(filename, logstr, {flags:"a+"});
+    fs.appendFileSync(logfile, logstr, {flags:"a+"});
 
 }
 

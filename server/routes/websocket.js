@@ -359,7 +359,7 @@ function writeLog(action, data){
             host: data.host,
             ua: data.userAgent,
             uri: data.requestURI,
-            post: (data.httpMethod.toLowerCase()=="post" && data.postData)?(["[DATA[","]]"].join(data.postData)):''
+            post: (data.httpMethod.toLowerCase()=="post" && data.postData)?(["[POST_DATA[","]]"].join(data.postData)):''
         })+os.EOL+os.EOL;
     }
 

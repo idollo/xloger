@@ -76,6 +76,10 @@ program
 					pidFile: config.pidfile,
 					logFile: config.syslog
 				});
+				if(result){
+					console.log("XLoger Web Monitor listening at http://:::"+config.port+".");
+				}
+				
 			});
 		}
 	});

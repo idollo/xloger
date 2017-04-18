@@ -28,13 +28,18 @@ class WebjetController extends Controller {
     }
 }
 ```
+**Webjet::auth_accept($data="", $channel=null)**
+**$data**: 返回握手成功数据, 前端通过"connected"事件获取.
+**$channel**: 用户端加入指定频道, 默认为HTTP_HOST,如: manager.diandao.org 
+
 --------------
 ##2. 推送消息
 **Webjet::emit($event, $data="", $blocking=false)**
 向当前web会话中的用户推送事件消息, 默认为非堵塞模式, 非堵塞时没有返回值. 而在堵塞模式($blocking=true)时, 发送成功返回True, 发送失败返回False
 
-**Webjet::publish($event, $data="", $blocking=false)**
+**Webjet::publish($event, $data="", $channel=null, $blocking=false)**
 广播事件消息给所有已连接的用户. 参数说明同 emit();
+**$channel**: 频道, 每个域名默认都有一个独立的频道/房间, 默认值为当前HTTP_HOST
 
 **绑定会话参数**
 同域名项目下, 会话是同步的, 但有时候会跳转至第三方页面, 如支付页, 支付系统是无法还原之前会话的, 所以跳出本域名前, 记得拼接webjet会话参数, 如: 
@@ -61,8 +66,10 @@ Webjet::emit("redirect", "http://diandao.org/pay/success?msg=支付成功";
 ```html
 <script src="//ddimg.net/js/socket.io.js"></script>
 <script>
-  var socket = io('/webjet/ws');
-  socket.on('connect', function(){});
+  var socket = io.connect('http://'+location.host, {path:"/webjet/ws/socket.io"});
+  socket.on('connected', function(data){
+      // 握手成功后会得到 Webjet::auth_accept($data)的data数据
+  });
   // redirect 事件
   socket.on('redirect', function(url){
       location.href = url;
@@ -70,8 +77,6 @@ Webjet::emit("redirect", "http://diandao.org/pay/success?msg=支付成功";
   socket.on('disconnect', function(){});
 </script>
 ```
-
-
 
 
 

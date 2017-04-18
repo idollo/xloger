@@ -6,6 +6,7 @@ var websocket = global.websocket;
 
 
 function reserr(err){
+	console.log(err);
 	return err.message;
 }
 
@@ -19,20 +20,19 @@ exports.push =  function(req, res, next){
 	,	channel = req.body.channel || null
 	,	data = req.body.data || ""
 	;
-
+	console.log(req.body);
 	try{ data = JSON.parse(data); }
-	catch(e){ res.send(reserr(e)); }
+	catch(e){ return res.send(reserr(e)); }
 
 	var ret = "";
 	try{
 		if(jetid){
-			ret = websocket.emit(event, data);
-		}
-		if(channel){
+			ret = websocket.emit(jetid, event, data);
+		}else if(channel){
 			ret = websocket.publish(channel, event, data);
 		}
 	}catch(e){
-		res.send(reserr(e));
+		return res.send(reserr(e));
 	}
 	res.send(ret);
 };

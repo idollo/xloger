@@ -13,14 +13,16 @@ var express	= require("express")
     // 解释表单数据
 ,   multipart = require("connect-multiparty")
 ,	session = require("express-session")
-,   router = require("./server/routes")
 ,	jsonfile = require("jsonfile")
 ;
-    
+
+
 // 全局变量
 var	sformat = global.sformat = require("./server/lib/string-format")
 ,	config = global.config = jsonfile.readFileSync( path.join(__dirname, "./runtime.json"))
+,	io = global.io = require("socket.io")()
 ,	websocket = global.websocket = require("./server/routes/websocket")
+,   router = require("./server/routes")
 ;
 
 require('console-stamp')(console, {
@@ -31,14 +33,14 @@ require('console-stamp')(console, {
 // APP 挂件
 // ---------
 
+app.use(bodyParser.json());
 // parse application/x-www-form-urlencoded 
-app.use(bodyParser.urlencoded({ extended: false }))
- 
+app.use(bodyParser.urlencoded({ extended: true }));
 // override with the X-HTTP-Method-Override header in the request 
 app.use( methodOverride('X-HTTP-Method-Override') );
 app.use( cookieParser() );
 
-
+app.set("trust proxy", true);
 
 app.use(session({
 	resave: false,
@@ -76,12 +78,12 @@ var server = app.listen.apply(app, listen_args)
 
 
 // globals
-var io  = global.io = require("socket.io").listen(server);
+io.listen(server);
 io.gather = {
 	threads:{}
 };
 
-io.set('authorization', websocket.handshake);
+io.use(websocket.handshake);
 // When someone connects to the websocket. Includes all the SocketIO events.
 io.sockets.on('connection', websocket.connect);
 

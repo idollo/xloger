@@ -14,15 +14,16 @@ var cookie = require("cookie")
 
 var sockets = {};
 
-exports.handshake = function(handshake, accept){
-    var headers = handshake.headers
+exports.handshake = function(socket, next){
+    var headers = socket.request.headers
     ,   host = headers.host
     ,   cookie = headers.cookie||""
     ;
 
-    if(!host || !cookie) accept('Authentication Failed.', false);
+    if(!host || !cookie) next(new Error('Authentication Failed.'));
 
     var auth_url = config.auth_map[host] || config.auth_url;
+    console.log("auth_url:"+auth_url);
     var options = {
         url: 'http://{#0}{#1}'.format(host, auth_url),
         headers: {
@@ -36,15 +37,14 @@ exports.handshake = function(handshake, accept){
             ,   jetid = response.headers['jet-id'] || null
             ,   channel = response.headers['jet-channel'] || null
             ;
-            console.log(accepted, jetid, channel);
             if(accepted && jetid){
-                handshake.authData = body;
-                handshake.jetid = jetid;
-                handshake.channel = channel;
-                return accept(null, true)
+                socket.handshake.authData = body;
+                socket.handshake.jetid = jetid;
+                socket.handshake.channel = channel;
+                return next();
             }
         }
-        accept('Authentication Failed.', false)
+        next(new Error('Authentication Failed.'))
     });
   
 };
@@ -55,13 +55,8 @@ exports.handshake = function(handshake, accept){
  * @param {[type]} socket [description]
  */
 exports.connect = function(socket) {
-
-    console.log("connected:"+socket.id);
-
 	var handshake = socket.handshake;
-
-    // parse cookies
-    handshake.cookies = cookie.parse(handshake.headers.cookie||"");
+    console.log("jetid:"+handshake.jetid);
     var jetid = handshake.jetid
     ,   host = handshake.headers.host
     ,   channel = handshake.channel || config.channel_map[host] || host
@@ -73,8 +68,7 @@ exports.connect = function(socket) {
     }
     sockets[jetid] = socket;
     socket.join( channel );
-
-    socket.emit('connect', "hello");
+    socket.emit('connected', handshake.authData);
     /** 断开来连接 */
     socket.on('disconnect', function () {
         console.log('disconnect');
@@ -88,8 +82,8 @@ exports.emit = function(jetid, action, data){
     var socket = sockets[jetid];
     if(!socket) return false;
     socket.emit(action, data);
-}
+};
 
 exports.publish = function(channel, action, data){
-    io.to(channel).emit(action, data);
-}
+    io.to(channel).emit(action, data );
+};

@@ -1,13 +1,13 @@
 {
-  "name": "xloger",
-  "version": "0.1.11",
+  "name": "webjet",
+  "version": "0.0.1",
   "preferGlobal": "true",
-  "description": "A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs",
+  "description": "websocket消息推送组件",
   "author": {
-    "name": "idollo",
-    "email": "idollo@xloger.org"
+    "name": "huangjl",
+    "email": "huangjl@diandao.org"
   },
-  "homepage": "https://github.com/idollo/xloger",
+  "homepage": "https://git.oschina.net/diandao/commons",
   "main": "xloger.js",
   "dependencies": {
     "console-stamp": "^0.2.4",
@@ -26,28 +26,16 @@
     "jsonfile": "^2.3.1",
     "method-override": "2.3.1",
     "moment": "2.10.6",
-    "node-cache": "^3.2.1",
-    "node-uuid": "^1.4.7",
     "readline": "^1.3.0",
     "socket.io": "1.3.5",
     "util": "0.10.3",
-    "vash": "0.7.12-1"
+    "request":"^2.81.0"
   },
   "devDependencies": {},
   "bin": {
-    "xloger": "./bin/xloger"
+    "webjet": "./bin/webjet"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:idollo/xloger.git"
-  },
-  "keywords": [
-    "loger",
-    "tracer",
-    "watcher"
-  ],
-  "license": "MIT"
+  }
 }

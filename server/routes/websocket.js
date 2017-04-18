@@ -23,7 +23,6 @@ exports.handshake = function(socket, next){
     if(!host || !cookie) next(new Error('Authentication Failed.'));
 
     var auth_url = config.auth_map[host] || config.auth_url;
-    console.log("auth_url:"+auth_url);
     var options = {
         url: 'http://{#0}{#1}'.format(host, auth_url),
         headers: {

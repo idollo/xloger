@@ -13,58 +13,34 @@ var express	= require("express")
     // 解释表单数据
 ,   multipart = require("connect-multiparty")
 ,	session = require("express-session")
-,   router = require("./server/routes")
 ,	jsonfile = require("jsonfile")
-,	NodeCache = require( "node-cache" )
 ;
-    
+
+
 // 全局变量
 var	sformat = global.sformat = require("./server/lib/string-format")
-,	ncache = global.ncache = new NodeCache()
 ,	config = global.config = jsonfile.readFileSync( path.join(__dirname, "./runtime.json"))
+,	io = global.io = require("socket.io")()
 ,	websocket = global.websocket = require("./server/routes/websocket")
+,   router = require("./server/routes")
 ;
-// 清除重置nodecache
-ncache.flushAll();
 
 require('console-stamp')(console, {
 	pattern: 'dd/mm/yyyy HH:MM:ss.l',
 	level: config.logLevel || "log"
 });
 
-// 创建socket接口, 订阅socket消息通道
-require("./server/routes/socket").subscribe();
-
-
-// 设置视图目录
-app.set('views', __dirname + '/server/views');
-// 设置模板引擎
-var vash = require("vash");
-vash.config.modelName  = "t";
-vash.config.debug = true;
-// 模板文件后缀使用.html
-app.engine(".html", vash.__express );
-app.set('view engine', 'html');
-
-app.set("trust proxy", true);
-
 // APP 挂件
 // ---------
-// 设置表态目录
-// static 为关键字, 故使用 express['static']
-app.use( express.static( __dirname + '/server/public') );
 
-// parse application/x-www-form-urlencoded 
-app.use(bodyParser.urlencoded({ extended: false }))
- 
-// parse application/json 
 app.use(bodyParser.json());
- 
+// parse application/x-www-form-urlencoded 
+app.use(bodyParser.urlencoded({ extended: true }));
 // override with the X-HTTP-Method-Override header in the request 
 app.use( methodOverride('X-HTTP-Method-Override') );
 app.use( cookieParser() );
 
-
+app.set("trust proxy", true);
 
 app.use(session({
 	resave: false,
@@ -76,9 +52,8 @@ app.use(session({
 
 app.use(errorhandler({ dumpExceptions: true, showStack: true }));
 
-app.get("/", router.watcher);
-
-app.get("/clientip", router.clientip);
+app.get("/", router.index);
+app.post("/push", router.push);
 
 var listen_args = config.listen;
 switch(({}).toString.apply(listen_args)){
@@ -97,18 +72,19 @@ switch(({}).toString.apply(listen_args)){
 listen_args = listen_args.concat([function(){
 	var host = server.address().address
 	var port = server.address().port
-	console.log('XLoger Web Monitor listening at http://%s:%s', host, port);
+	console.log('webjet listening at http://%s:%s', host, port);
 }])
 var server = app.listen.apply(app, listen_args)
 
 
 // globals
-io  = require("socket.io").listen(server);
+io.listen(server);
 io.gather = {
 	threads:{}
 };
 
+io.use(websocket.handshake);
 // When someone connects to the websocket. Includes all the SocketIO events.
-io.sockets.on('connection', websocket.SocketOnConnection);
+io.sockets.on('connection', websocket.connect);
 
 module.exports = app;

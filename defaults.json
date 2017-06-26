@@ -1,11 +1,9 @@
 {
-	"listen":[9527, "127.0.0.1"],
-
-	"bind": 19527,
-
-	"logdir":"/var/log/xloger/",
-	"logfile":"/var/log/xloger/{serverIP}/{type}.log",
-
-	"syslog":"/var/log/xloger/xloger.log",
-	"pidfile":"/var/run/xloger.pid"
+	"listen":[9009, "127.0.0.1"],
+	"bind": 19009,
+	"logfile":"/var/log/webjet..log",
+	"pidfile":"/var/run/webjet.pid",
+	"auth_url":"/webjet/auth",
+	"auth_map":{},
+	"channel_map":{}
 }

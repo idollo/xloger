@@ -1,13 +1,13 @@
 {
   "name": "xloger",
-  "version": "0.2.11",
+  "version": "0.1.11",
   "preferGlobal": "true",
   "description": "A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs",
   "author": {
-    "name": "huangjl",
-    "email": "huangjl@diandao.org"
+    "name": "idollo",
+    "email": "idollo@xloger.org"
   },
-  "homepage": "https://git.oschina.net/diandao/commons",
+  "homepage": "https://github.com/idollo/xloger",
   "main": "xloger.js",
   "dependencies": {
     "console-stamp": "^0.2.4",
@@ -26,16 +26,28 @@
     "jsonfile": "^2.3.1",
     "method-override": "2.3.1",
     "moment": "2.10.6",
+    "node-cache": "^3.2.1",
+    "node-uuid": "^1.4.7",
     "readline": "^1.3.0",
     "socket.io": "1.3.5",
     "util": "0.10.3",
-    "request":"^2.81.0"
+    "vash": "0.7.12-1"
   },
   "devDependencies": {},
   "bin": {
-    "webjet": "./bin/webjet"
+    "xloger": "./bin/xloger"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:idollo/xloger.git"
+  },
+  "keywords": [
+    "loger",
+    "tracer",
+    "watcher"
+  ],
+  "license": "MIT"
 }

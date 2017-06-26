@@ -26,14 +26,14 @@ var uconf = null;
 switch(os.platform().toLowerCase()){
 	case "win32":
 		var sysdriver = path.parse(os.os.homedir())['root'];
-		uconf = path.join(path.parse(os.os.homedir())['root'], "windows", "system32", "webjet.json");
+		uconf = path.join(path.parse(os.os.homedir())['root'], "windows", "system32", "xloger.json");
 		break;
 	default:
-		uconf = "/etc/webjet.json";
+		uconf = "/etc/xloger.json";
 }
 
 var	runtime_file = path.join(pwd, "../runtime.json")
-,	app_script = path.join(pwd, "../webjet.js");
+,	app_script = path.join(pwd, "../xloger.js");
 
 // assign the version from package.json
 program.version(pkg.version);
@@ -43,8 +43,8 @@ program.version(pkg.version);
  */
 program
 	.command('start')
-	.description('start webjet.')
-	.option("-p, --port", "the port webjet listened, default: 9009")
+	.description('start xloger server with web gui.')
+	.option("-p, --port", "the port xloger server listened, default: 9527")
 	.option("-c, --config", "path to config file which format whith json.\n\t\t  default:"+uconf)
 	.option("-d, --debug", "debug mode, default to daemon mode.")
 	.action(function(options){
@@ -56,21 +56,6 @@ program
 		if(fs.existsSync(options.config)){
 			config = Object.assign(config, require(options.config));
 		}
-		var listen_args = config.listen;
-		switch(({}).toString.apply(listen_args)){
-			case "[object Array]":
-				break;
-			case "[object String]":
-				var m = /(.*?)\:(\d+)$/.exec(bind);
-				if(m){
-					listen_args = [m[2], m[1]];
-					break;
-				}
-			default:
-				listen_args = [listen_args];
-		}
-		config.port = listen_args[0];
-		config.host = listen_args[1];
 
 		if(options.port) config.port = options.port;
 		
@@ -83,16 +68,16 @@ program
 			forever.getAllProcesses(function(err, processes){
 				var proc = forever.findByScript(app_script, processes);
 				if(proc){
-					console.error('error: webjet has already run as pid:'+proc[0].pid+'.');
+					console.error('error: xloger has already run as pid:'+proc[0].pid+'.');
 					return;
 				}
 				var result = forever.startDaemon(app_script, {
-					uid:"webjet",
+					uid:"xloger",
 					pidFile: config.pidfile,
-					logFile: config.logfile
+					logFile: config.syslog
 				});
 				if(result){
-					console.log("webjet listening at http://"+config.host+":"+config.port+".");
+					console.log("XLoger Web Monitor listening at http://:::"+config.port+".");
 				}
 				
 			});
@@ -104,16 +89,16 @@ program
  */
 program
 	.command('stop')
-	.description('stop webjet server.')
+	.description('stop xloger server.')
 	.action(function(){
 		forever.getAllProcesses(function(err, processes){
 			var proc = forever.findByScript(app_script, processes);
 			if(!proc){
-				console.error('error: webjet does not running.');
+				console.error('error: xloger does not running.');
 				return;
 			}
 			forever.stop(app_script);
-			console.log("webjet stoped.")
+			console.log("xloger stoped.")
 		});
 	});
 

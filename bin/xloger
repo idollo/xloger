@@ -32,8 +32,7 @@ switch(os.platform().toLowerCase()){
 		uconf = "/etc/xloger.json";
 }
 
-var	runtime_file = path.join(pwd, "../runtime.json")
-,	app_script = path.join(pwd, "../xloger.js");
+var	app_script = path.join(pwd, "../xloger.js");
 
 // assign the version from package.json
 program.version(pkg.version);
@@ -44,6 +43,7 @@ program.version(pkg.version);
 program
 	.command('start')
 	.description('start xloger server with web gui.')
+	.option("-h, --host", "the host xloger server listened, default: 127.0.0.1")
 	.option("-p, --port", "the port xloger server listened, default: 9527")
 	.option("-c, --config", "path to config file which format whith json.\n\t\t  default:"+uconf)
 	.option("-d, --debug", "debug mode, default to daemon mode.")
@@ -57,10 +57,26 @@ program
 			config = Object.assign(config, require(options.config));
 		}
 
+		var listen_args = config.listen;
+		switch(({}).toString.apply(listen_args)){
+			case "[object Array]":
+				break;
+			case "[object String]":
+				var m = /(.*?)\:(\d+)$/.exec(bind);
+				if(m){
+					listen_args = [m[2], m[1]];
+					break;
+				}
+			default:
+				listen_args = [listen_args];
+		}
+		config.port = listen_args[0];
+		config.host = listen_args[1];
+
+
+		if(options.host) config.host = options.host;
 		if(options.port) config.port = options.port;
 		
-		// write config to file
-		jsonfile.writeFileSync(runtime_file, config);
 		if(options.debug){
 			require(app_script);
 			return;
@@ -77,7 +93,7 @@ program
 					logFile: config.syslog
 				});
 				if(result){
-					console.log("XLoger Web Monitor listening at http://:::"+config.port+".");
+					console.log("XLoger Web Monitor listening at http://"+config.host+":"+config.port+".");
 				}
 				
 			});

@@ -57,7 +57,7 @@ exports.SocketOnConnection = function(socket) {
 
         if(field) handshake.filter[field] = filter[1];
         
-        filterMgr.update(socket);
+        filterMgr.update(socket, handshake.filter );
         socket.emit("updateFilter", handshake.filter );
     });
 

@@ -21,12 +21,12 @@ function writeSocket(socket, data, callback){
 
 function threadCheckin(socket, data){
 	var accepted = filterMgr.detect(data);
-	serverRegister(socket.remoteAddress, data.host);
+	addReportor(socket.remoteAddress, data.host);
 	writeSocket(socket, {accepted: accepted, ip:socket.remoteAddress});
 }
 
 
-function serverRegister(ip, host){
+function addReportor(ip, host){
 	var reportors = ncache.get("reportors")||{};
 
     var server = reportors[ip];
@@ -43,6 +43,14 @@ function serverRegister(ip, host){
     ncache.set("reportors", reportors);
 }
 
+
+function register(socket, data){
+	if(data.duplex){
+		socket.duplex = true;
+	}
+	addReportor(socket.remoteAddress, data.host);
+
+}
 
 
 // 消息调度

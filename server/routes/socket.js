@@ -15,7 +15,7 @@ class SocketReader extends Stream.Readable {
 
 
 function writeSocket(socket, data, callback){
-	socket.write( JSON.stringify(data)+"\n", "utf-8", callback );
+	socket.write( JSON.stringify(data)+"\n", "utf-8", callback||function(){} );
 }
 
 
@@ -45,11 +45,9 @@ function addReportor(ip, host){
 
 
 function register(socket, data){
-	if(data.duplex){
-		socket.duplex = true;
-	}
+	if(data.duplex){ socket.duplex = true; }
 	addReportor(socket.remoteAddress, data.host);
-
+	writeSocket(socket, {action:"filter", data:filterMgr.list()});
 }
 
 

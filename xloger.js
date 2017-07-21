@@ -21,9 +21,15 @@ var express	= require("express")
 // 全局变量
 var	sformat = global.sformat = require("./server/lib/string-format")
 ,	ncache = global.ncache = new NodeCache()
-,	config = global.config = jsonfile.readFileSync( path.join(__dirname, "./runtime.json"))
-,	websocket = global.websocket = require("./server/routes/websocket")
+,	config = global.config || require('./server/lib/configloader').load()
 ;
+
+global.config = config;
+
+var	websocket = global.websocket = require("./server/routes/websocket")
+;
+
+
 // 清除重置nodecache
 ncache.flushAll();
 
@@ -33,7 +39,8 @@ require('console-stamp')(console, {
 });
 
 // 创建socket接口, 订阅socket消息通道
-require("./server/routes/socket").subscribe();
+global.socket = require("./server/routes/socket");
+global.socket.subscribe();
 
 
 // 设置视图目录

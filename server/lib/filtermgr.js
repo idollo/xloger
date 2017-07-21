@@ -25,6 +25,7 @@ function update(websocket, filter){
 	if(filterids.indexOf(sid) < 0 ){
 		filterids.push(sid);
 	}
+	global.socket.broadcastFilter()
 }
 
 
@@ -153,5 +154,6 @@ module.exports = {
 	update: update,
 	get: get,
 	detect: detect,
-	remove: remove
+	remove: remove,
+	list: list
 };

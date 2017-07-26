@@ -194,7 +194,6 @@ function webPublish (action, data){
 
     // 写日志
     writeLog(action, data );
-
     // 遍历客户端, 根据filter发送消息
     io.to("web").sockets.forEach(function(socket, i){
         if( dispatchFilter(socket, data) ){

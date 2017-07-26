@@ -29,25 +29,26 @@ function threadCheckin(socket, data){
 
 function addReportor(ip, host){
 	var reportors = ncache.get("reportors")||{};
-
     var server = reportors[ip];
+    var newserver = false, newhost = false;
     if(!server){
         server = reportors[ip] = {
             serverip: ip,
             hosts:[]
         };
+        newserver = true;
     }
     // 保存服务器所绑定的host
     if(host && host.toLowerCase()!="unknown" && server.hosts.indexOf(host)<0 ){
         server.hosts.push(host)
+        newhost = true;
     }
-    ncache.set("reportors", reportors);
+    (newhost || newhost) && ncache.set("reportors", reportors);
 }
 
 
 function register(socket, data){
 	if(data.reciever){ socket.reciever = true; }
-	addReportor(socket.remoteAddress, data.host);
 	sendFilter(socket, get_filters())
 }
 
@@ -64,6 +65,7 @@ function messageDispatcher(socket, message){
 		case "register":
 			return register(socket, data);
 		case "trace":
+			addReportor(socket.remoteAddress, data.host || "unknown" );
 			return webPublish("log", data);
 		default:
 			return;

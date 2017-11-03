@@ -1,0 +1,11 @@
+{
+	"listen":[9527, "127.0.0.1"],
+
+	"bind": 19527,
+
+	"logdir":"/var/log/xloger/",
+	"logfile":"/var/log/xloger/{serverIP}/{type}.log",
+
+	"syslog":"/var/log/xloger/xloger.log",
+	"pidfile":"/var/run/xloger.pid"
+}

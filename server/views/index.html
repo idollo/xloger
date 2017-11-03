@@ -1,0 +1,57 @@
+<html>
+<head>
+	<title>@t.title</title>
+	<link type="text/css" rel="stylesheet" href="/css/inspector.css" />
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/socket.io.js"></script>
+	<script src="/js/inspector.js"></script>
+	
+</head>
+
+<body>
+
+	<div id="log_list" class=log-list></div>
+
+	<section id="express" class=express></section>
+
+	<section id="filter" class=filter>
+		<div class=submiter>
+			<label>Filter:</label><input type=text name=fkw />
+
+			<span>Your Address:<span id="address"></span></span>
+
+			<button type=button action="clear" >清空</button>
+		</div>
+	</section>
+	<script type="text/javascript" src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
+	<script>
+		
+
+		var socket = io('http://'+location.host+'/');
+		var inspector = new Inspector(socket);
+
+		socket.on("connected", function(data){
+			var filters = 0;
+			for(var x in data.filter){
+				filters = 1; break;
+			}
+			var ip = returnCitySN.cip;
+			if(!filters){
+				data.address = ip
+				inspector.renderExpress(data);
+			}
+			$("#address").text( data.address );			
+		});
+
+		socket.on('log', function (data) {
+			console.log(data);
+			inspector.push(data);
+		});
+
+		socket.on("updateFilter", function(data){
+			inspector.updateFilter(data);
+		})
+	</script>
+</body>
+
+</html>

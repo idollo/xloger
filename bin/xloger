@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+/**
+ * xloger command-line interface
+ * use:
+ *	xloger --help to get help.
+ *	xloger start to start a daemon service.
+ *	xloger stop to stop the server.
+ */
+
+var pwd = __dirname
+,	os = require('os')
+,	fs = require("fs")
+,	path = require('path')
+,	program  = require('commander')
+,	jsonfile = require('jsonfile')
+,	defs = require("../defaults.json")
+,	pkg	 = require("../package")
+,	forever = require('xforever')
+,	execSync = require('child_process').execSync
+,	configloader	= require('../server/lib/configloader')
+;
+
+var	app_script = path.join(pwd, "../xloger.js");
+
+// assign the version from package.json
+program.version(pkg.version);
+
+/**
+ * start command
+ */
+program
+	.command('start')
+	.description('start xloger server with web gui.')
+	.option("-h, --host", "the host xloger server listened, default: 127.0.0.1")
+	.option("-p, --port", "the port xloger server listened, default: 9527")
+	.option("-c, --config", "path to config file which format whith json.")
+	.option("-d, --debug", "debug mode, default to daemon mode.")
+	.action(function(options){
+		// load the user config file which exists.
+		var config = configloader.load(options.config);
+		if(options.port) config.port = options.port;
+		if(options.host) config.host = options.host;
+		if(options.debug) config.debug = true;
+		
+		if(options.debug){
+			require(app_script);
+			return;
+		}else{
+			forever.getAllProcesses(function(err, processes){
+				var proc = forever.findByScript(app_script, processes);
+				if(proc){
+					console.error('error: xloger has already run as pid:'+proc[0].pid+'.');
+					return;
+				}
+				var result = forever.startDaemon(app_script, {
+					uid:"xloger",
+					pidFile: config.pidfile,
+					logFile: config.syslog
+				});
+				if(result){
+					console.log("XLoger Web Monitor listening at http://"+config.host+":"+config.port+".");
+				}
+				
+			});
+		}
+	});
+
+/**
+ * stop command
+ */
+program
+	.command('stop')
+	.description('stop xloger server.')
+	.action(function(){
+		forever.getAllProcesses(function(err, processes){
+			var proc = forever.findByScript(app_script, processes);
+			if(!proc){
+				console.error('error: xloger does not running.');
+				return;
+			}
+			forever.stop(app_script);
+			console.log("xloger stoped.")
+		});
+	});
+
+
+program.parse(process.argv);

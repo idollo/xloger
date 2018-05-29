@@ -1,4 +1,4 @@
-#XLoger (in construction)
+# XLoger
 
 A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs.
 			

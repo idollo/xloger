@@ -50,9 +50,7 @@ var vash = require("vash");
 vash.config.modelName  = "t";
 vash.config.debug = true;
 // 模板文件后缀使用.html
-app.engine(".html", vash.__express );
-app.set('view engine', 'html');
-
+app.set('view engine', 'vash');
 app.set("trust proxy", true);
 
 // APP 挂件

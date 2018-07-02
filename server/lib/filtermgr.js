@@ -20,7 +20,7 @@ function updateAll(){
  */
 function update(websocket, filter){
 	var sid 	= websocket.id
-	,	filter 	= websocket.handshake.filter;
+	,	filter 	= filter || websocket.handshake.filter;
 	ncache.set("filter:"+sid, filter, 600);
 	if(filterids.indexOf(sid) < 0 ){
 		filterids.push(sid);
@@ -34,7 +34,7 @@ function list(){
 	filterids.forEach(function(sid, i){
 		nkeys.push("filter:"+sid);
 	})
-	return ncache.mget(nkeys);
+	return ncache.mget(nkeys).filter(function(x){ return !!x; });
 }
 
 

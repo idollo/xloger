@@ -49,6 +49,7 @@ function addReportor(ip, host){
 
 function register(socket, data){
 	if(data.reciever){ socket.reciever = true; }
+	addReportor(socket.remoteAddress, data.host || "unknown" );
 	sendFilter(socket, get_filters())
 }
 

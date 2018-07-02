@@ -90,7 +90,7 @@ switch(({}).toString.apply(listen_args)){
 	case "[object Array]":
 		break;
 	case "[object String]":
-		var m = /(.*?)\:(\d+)$/.exec(bind);
+		var m = /(.*?)\:(\d+)$/.exec(listen_args);
 		if(m){
 			listen_args = [m[2], m[1]];
 			break;

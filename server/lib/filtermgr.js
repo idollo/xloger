@@ -20,7 +20,7 @@ function updateAll(){
  */
 function update(websocket, filter){
 	var sid 	= websocket.id
-	,	filter 	= filter || websocket.handshake.filter;
+	,	filter 	= websocket.handshake.filter;
 	ncache.set("filter:"+sid, filter, 600);
 	if(filterids.indexOf(sid) < 0 ){
 		filterids.push(sid);
@@ -49,6 +49,7 @@ function get(socketid){
  * remove the filter from stack as an web-socket disconnected.
  */
 function remove(socketid){
+	ncache.del("filter:"+socketid);
 	var index = filterids.indexOf(socketid);
 	if(index>=0){
 		filterids.splice(index, 1);

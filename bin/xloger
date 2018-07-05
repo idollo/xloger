@@ -35,23 +35,23 @@ function start(options){
 
 }
 
-function stop(){
-	forever.getAllProcesses(function(err, processes){
-		var proc = forever.findByScript(app_script, processes);
-		if(!proc){
-			console.error('error: xloger does not running.');
-			return;
-		}
-		forever.stop(app_script);
-		console.log("xloger stoped.")
-	});
-}
+// function stop(){
+// 	forever.getAllProcesses(function(err, processes){
+// 		var proc = forever.findByScript(app_script, processes);
+// 		if(!proc){
+// 			console.error('error: xloger does not running.');
+// 			return;
+// 		}
+// 		forever.stop(app_script);
+// 		console.log("xloger stoped.")
+// 	});
+// }
 
 
-function restart(options){
-	stop();
-	start(options);
-}
+// function restart(options){
+// 	stop();
+// 	start(options);
+// }
 
 
 /**
@@ -69,20 +69,20 @@ program
 /**
  * stop command
  */
-program
-	.command('stop')
-	.description('stop xloger server.')
-	.action(stop);
+// program
+// 	.command('stop')
+// 	.description('stop xloger server.')
+// 	.action(stop);
 
 
-program
-	.command("restart")
-	.description("restart xloger server")
-	.option("-h, --host", "the host xloger server listened, default: 127.0.0.1")
-	.option("-p, --port", "the port xloger server listened, default: 9527")
-	.option("-c, --config", "path to config file which format whith json.")
-	.option("-d, --debug", "debug mode, default to daemon mode.")
-	.action(restart)
+// program
+// 	.command("restart")
+// 	.description("restart xloger server")
+// 	.option("-h, --host", "the host xloger server listened, default: 127.0.0.1")
+// 	.option("-p, --port", "the port xloger server listened, default: 9527")
+// 	.option("-c, --config", "path to config file which format whith json.")
+// 	.option("-d, --debug", "debug mode, default to daemon mode.")
+// 	.action(restart)
 
 
 program.parse(process.argv);

@@ -3,7 +3,7 @@ const readline = require('readline');
 const Stream = require('stream');
 
 var filterMgr = require('../lib/filtermgr');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 var webPublish = require('../routes/websocket').webPublish;
 

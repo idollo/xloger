@@ -28,6 +28,7 @@ function threadCheckin(socket, data){
 
 
 function addReportor(ip, host){
+	if(!ip) return;
 	var reportors = ncache.get("reportors")||{};
     var server = reportors[ip];
     var newserver = false, newhost = false;
@@ -43,7 +44,7 @@ function addReportor(ip, host){
         server.hosts.push(host)
         newhost = true;
     }
-    (newhost || newhost) && ncache.set("reportors", reportors);
+    (newserver || newhost) && ncache.set("reportors", reportors);
 }
 
 
@@ -79,11 +80,10 @@ var sockets = {};
 
 
 function get_filters(){
-	var filters=[], kfilters = filterMgr.list();
-	for(var fid in kfilters){
-		filters.push(kfilters[fid]);
-	}
-	return filters;
+	return filterMgr.list().filter(function(x){ 
+		for(var n in x){ return 1; }
+		return false;
+	 });
 }
 
 function broadcastFilter(){

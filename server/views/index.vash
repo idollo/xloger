@@ -31,6 +31,7 @@
 		var inspector = new Inspector(socket);
 
 		socket.on("connected", function(data){
+			console.log(data);
 			var filters = 0;
 			for(var x in data.filter){
 				filters = 1; break;

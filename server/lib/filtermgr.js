@@ -30,13 +30,21 @@ function update(websocket, filter){
 
 
 function list(){
+	var filters=[], ns = nlist();
+	for(var n in ns){
+		filters.push(ns[n]);
+	}
+	return filters;
+}
+
+
+function nlist(){
 	var nkeys = [];
 	filterids.forEach(function(sid, i){
 		nkeys.push("filter:"+sid);
 	})
-	return ncache.mget(nkeys).filter(function(x){ return !!x; });
+	return ncache.mget(nkeys);
 }
-
 
 /**
  * get a web-socket's filter with socketid

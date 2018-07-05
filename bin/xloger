@@ -15,7 +15,6 @@ var pwd = __dirname
 ,	jsonfile = require('jsonfile')
 ,	defs = require("../defaults.json")
 ,	pkg	 = require("../package")
-,	forever = require('xforever')
 ,	execSync = require('child_process').execSync
 ,	configloader	= require('../server/lib/configloader')
 ;
@@ -31,29 +30,9 @@ function start(options){
 	var config = configloader.load(options.config);
 	if(options.port) config.port = options.port;
 	if(options.host) config.host = options.host;
-	if(options.debug) config.debug = true;
-	
-	if(options.debug){
-		require(app_script);
-		return;
-	}else{
-		forever.getAllProcesses(function(err, processes){
-			var proc = forever.findByScript(app_script, processes);
-			if(proc){
-				console.error('error: xloger has already run as pid:'+proc[0].pid+'.');
-				return;
-			}
-			var result = forever.startDaemon(app_script, {
-				uid:"xloger",
-				pidFile: config.pidfile,
-				logFile: config.syslog
-			});
-			if(result){
-				console.log("XLoger Web Monitor listening at http://"+config.host+":"+config.port+".");
-			}
-			
-		});
-	}
+	require(app_script);
+	return;
+
 }
 
 function stop(){

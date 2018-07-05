@@ -1,6 +1,6 @@
 {
   "name": "xloger",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "preferGlobal": "true",
   "description": "A cross-server web-GUI log monitor for cross-language(PHP/Node/Python and more) websever logs",
   "author": {
@@ -23,7 +23,6 @@
     "express": "4.12.3",
     "express-error": "0.0.7",
     "express-session": "1.10.3",
-    "xforever": "~0.1.0",
     "jsonfile": "^2.3.1",
     "method-override": "2.3.1",
     "moment": "2.10.6",

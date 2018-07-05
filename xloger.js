@@ -26,17 +26,15 @@ var	sformat = global.sformat = require("./server/lib/string-format")
 
 global.config = config;
 
-var	websocket = global.websocket = require("./server/routes/websocket")
-;
-
-
-// 清除重置nodecache
-ncache.flushAll();
-
 require('console-stamp')(console, {
 	pattern: 'dd/mm/yyyy HH:MM:ss.l',
 	level: config.logLevel || "log"
 });
+
+var	websocket = global.websocket = require("./server/routes/websocket");
+
+// 清除重置nodecache
+ncache.flushAll();
 
 // 创建socket接口, 订阅socket消息通道
 global.socket = require("./server/routes/socket");

@@ -37,22 +37,27 @@ function start(options){
 		require(app_script);
 		return;
 	}else{
-		forever.getAllProcesses(function(err, processes){
-			var proc = forever.findByScript(app_script, processes);
-			if(proc){
-				console.error('error: xloger has already run as pid:'+proc[0].pid+'.');
+		var running = false;
+		fs.readFile(config.pidfile, 'utf8', function(err, pid){
+			if(err){
 				return;
 			}
-			var result = forever.startDaemon(app_script, {
-				uid:"xloger",
-				pidFile: config.pidfile,
-				logFile: config.syslog
-			});
-			if(result){
-				console.log("XLoger Web Monitor listening at http://"+config.host+":"+config.port+".");
-			}
-			
+			running = true;
+			console.error('error: xloger has already run as pid:'+pid+'.');
 		});
+
+		if(running){
+			return;
+		}
+		var result = forever.startDaemon(app_script, {
+			uid:"xloger",
+			pidFile: config.pidfile,
+			logFile: config.syslog
+		});
+		
+		if(result){
+			console.log("XLoger Web Monitor listening at http://"+config.host+":"+config.port+".");
+		}
 	}
 }
 

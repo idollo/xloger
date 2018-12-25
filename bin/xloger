@@ -61,7 +61,7 @@ function start(options){
 	}
 }
 
-function stop(){
+function stop(options){
 	var config = configloader.load(options.config);
 	fs.readFile(config.pidfile, 'utf8', function(err, pid){
 		if(err){

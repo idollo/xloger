@@ -37,40 +37,53 @@ function start(options){
 		require(app_script);
 		return;
 	}else{
-		var running = false;
-		fs.readFile(config.pidfile, 'utf8', function(err, pid){
+		
+		forever.list(false, function(err, processes){
 			if(err){
+				console.log(err);
 				return;
 			}
-			running = true;
-			console.error('error: xloger has already run as pid:'+pid+'.');
-		});
+			var running = false;
+			(processes||[]).forEach(function(p, i){
+				if(p.file == app_script){
+					running = true;
+					console.error('Error: xloger has already run as pid:'+p.pid+'.');
+				}
+				return false;
+			});
 
-		if(running){
-			return;
-		}
-		var result = forever.startDaemon(app_script, {
-			uid:"xloger",
-			pidFile: config.pidfile,
-			logFile: config.syslog
-		});
+			if(running){
+				return;
+			}
+			var result = forever.startDaemon(app_script, {
+				uid:"xloger",
+				pidFile: config.pidfile,
+				logFile: config.syslog
+			});
 
-		if(result){
-			console.log("XLoger Web Monitor listening at http://"+config.host+":"+config.port+".");
-		}
+			if(result){
+				console.log("XLoger Web Monitor listening at http://"+config.host+":"+config.port+".");
+			}
+		});
 	}
 }
 
 function stop(options){
-	var config = configloader.load(options.config);
-	fs.readFile(config.pidfile, 'utf8', function(err, pid){
-		if(err){
+	forever.list(false, function(err, processes){
+		var exists = false;
+		(processes||[]).forEach(function(p, i){
+			if(p.file == app_script){
+				forever.stop(i);
+				exists = true;
+				console.log("xloger stoped.")
+			}
+			return false;
+		});
+		if(!exists){
 			console.error('error: xloger does not running.');
-			return;
 		}
-		process.kill(pid);
-		console.log("xloger stoped.")
 	});
+	
 }
 
 

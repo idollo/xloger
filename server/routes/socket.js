@@ -15,7 +15,6 @@ class SocketReader extends Stream.Readable {
 
 
 function writeSocket(socket, data, callback){
-	console.log(data)
 	socket.write( JSON.stringify(data)+"\n", "utf-8" );
 }
 
@@ -178,7 +177,9 @@ function subscribe(){
 			}catch(e){
 				console.log(e);
 			}
-			messageDispatcher(socket, message);
+			setTimeout(function(){
+				messageDispatcher(socket, message);
+			}, 0);
 	    });
 	    // 为这个socket实例添加一个"data"事件处理函数
 	    socket.on('data', function(buffer) {

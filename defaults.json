@@ -7,5 +7,10 @@
 	"logfile":"/var/log/xloger/{serverIP}/{type}.log",
 
 	"syslog":"/var/log/xloger/xloger.log",
-	"pidfile":"/var/run/xloger.pid"
+	"pidfile":"/var/run/xloger.pid",
+	"filter_broker":{
+		"host":"127.0.0.1",
+		"port":19527,
+		"file":"/var/run/xloger.filter"
+	}
 }

@@ -11,6 +11,7 @@
 	"filter_broker":{
 		"host":"127.0.0.1",
 		"port":19527,
-		"file":"/var/run/xloger.filter"
+		"backend":"file:///var/run/xloger.filter",
+		"log_level": "info"
 	}
 }

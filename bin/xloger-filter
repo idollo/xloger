@@ -19,9 +19,6 @@ var pwd = __dirname
 ;
 
 
-
-var	app_script = path.join(pwd, "../xloger.js");
-
 // assign the version from package.json
 program.version(pkg.version);
 

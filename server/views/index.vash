@@ -10,13 +10,13 @@
 
 <body>
 
-	<div id="log_list" class=log-list></div>
+	<div id="log_list" class="log-list"></div>
 
-	<section id="express" class=express></section>
+	<section id="express" class="express"></section>
 
-	<section id="filter" class=filter>
-		<div class=submiter>
-			<label>Filter:</label><input type=text name=fkw />
+	<section id="filter" class="filter">
+		<div class="submiter">
+			<label>Filter:</label><input type="text" name="fkw" />
 
 			<span>Your Address:<span id="address"></span></span>
 

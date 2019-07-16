@@ -27,7 +27,7 @@
 	<script>
 		
 
-		var socket = io('http://'+location.host+'/');
+		var socket = io();
 		var inspector = new Inspector(socket);
 
 		socket.on("connected", function(data){

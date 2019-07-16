@@ -14,8 +14,8 @@ var pwd = __dirname
 var uconf = null;
 switch(os.platform().toLowerCase()){
 	case "win32":
-		var sysdriver = path.parse(os.os.homedir())['root'];
-		uconf = path.join(path.parse(os.os.homedir())['root'], "windows", "system32", appname+".json");
+		var sysdriver = path.parse(os.homedir())['root'];
+		uconf = path.join(path.parse(os.homedir())['root'], "windows", "system32", appname+".json");
 		break;
 	default:
 		uconf = "/etc/"+appname+".json";

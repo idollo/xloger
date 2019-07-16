@@ -1,5 +1,6 @@
 var pwd = __dirname
 ,	os = require('os')
+,	path = require('path')
 ,	fs = require("fs")
 ,	jsonfile = require('jsonfile')
 ,	defs = require("../../defaults.json")
